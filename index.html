@@ -1,16 +1,72 @@
 <!DOCTYPE html>
 <html lang='ru'>
 <head>
-<meta charset='UTF-8'>
-<title>Интерактивный тест</title>
-<style>
-body { font-family: sans-serif; max-width: 900px; margin: auto; padding: 2em; }
-h2 { color: #333; }
-.question { margin-bottom: 2em;}
-button { margin-top: 10px;  }
-.correct { color: green; }
-.incorrect { color: red; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Интерактивный тест</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 900px;
+      margin: auto;
+      padding: 2em;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .question {
+      margin-bottom: 2em;
+    }
+
+    label {
+      display: block;
+      margin: 0.5em 0;
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    input[type="radio"] {
+      transform: scale(1.2);
+      margin-right: 0.5em;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 8px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+    }
+
+    @media (max-width: 600px) {
+      label {
+        font-size: 1.1em;
+      }
+
+      input[type="radio"] {
+        transform: scale(1.5);
+      }
+
+      button {
+        font-size: 1.2em;
+        padding: 14px 24px;
+        width: 100%; 
+        box-sizing: border-box;
+      }
+    }
+  </style>
 </head>
 <body>
 <h1>Интерактивный тест</h1>

@@ -3210,6 +3210,15 @@
     updateResult();
   }
   
+  function toggleControls() {
+    var controls = document.getElementById("bottom-controls");
+    if (controls.style.display === "none") {
+      controls.style.display = "block";
+    } else {
+      controls.style.display = "none";
+    }
+  }
+  
   function startRepeatErrors() {
   if (incorrectQuestions.length === 0) {
     alert("Ошибок пока нет!");
@@ -3229,9 +3238,12 @@
   window.onload = () => {
     startLearningBatch(0); // можно заменить на 1, 2 и т.д.
   };
+  
+  
 </script>
 
-<div id="bottom-controls">
+<div id="bottom-controls" style="display:none;">
+<!-- Кнопка для показа/скрытия блока -->
   <button onclick="startLearningBatch(0)">🔢 Вопросы 1–50</button>
   <button onclick="startLearningBatch(1)">🔢 Вопросы 51–100</button>
   <button onclick="startLearningBatch(2)">🔢 Вопросы 101–150</button>
@@ -3241,6 +3253,11 @@
   <button onclick="startLearningBatch(6)">🔢 Вопросы 301–350</button>
   <button onclick="startRepeatErrors()">🔁 Повторить ошибки</button>
 </div>
+<div id="bottom-controls">
+  <button onclick="toggleControls()">🔽</button>
+</div>
+
+
 
 
 </body>

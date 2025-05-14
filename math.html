@@ -37,6 +37,11 @@
 
   <script>
     let score = 0, total = 0, answered = 0, selectedQuestions = [];
+    
+    let correctEasy = 0;
+    let correctMedium = 0;
+    let correctHard = 0;
+
 
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -116,7 +121,13 @@
           li.addEventListener('click', () => {
             if (div.dataset.answered==='true') return;
             const correct = li.dataset.correct==='true';
-            if (correct) { li.classList.add('correct'); score++; }
+            if (correct) {
+                  li.classList.add('correct');
+                  score++;
+                  if (q.difficulty === 'easy') correctEasy++;
+                  else if (q.difficulty === 'medium') correctMedium++;
+                  else if (q.difficulty === 'hard') correctHard++;
+                }
             else {
               li.classList.add('incorrect');
               // подсветим правильный
@@ -139,9 +150,20 @@
     }
 
     document.getElementById('finish').addEventListener('click', () => {
-      document.getElementById('score').textContent =
-        `Вы ответили правильно на ${score} из ${total} вопросов.`;
-    });
+  const scoreValue = (correctEasy * 1 + correctMedium * 2 + correctHard * 3) / 49 * 100;
+  const scoreRounded = Math.round(scoreValue * 10) / 10; // округляем до 1 знака
+
+  document.getElementById('score').innerHTML =
+    `Вы ответили правильно на <strong>${score}</strong> из ${total} вопросов.<br>
+    Балл по формуле: <strong>${scoreRounded}</strong> из 100.<br><br>
+    Правильных ответов:
+    <ul>
+      <li>Easy:${correctEasy}</li>
+      <li>Medium:${correctMedium}</li>
+      <li>Hard:${correctHard}</li>
+    </ul>`;
+});
+
   </script>
 </body>
 </html>

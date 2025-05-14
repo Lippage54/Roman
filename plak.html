@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Тест по математике</title>
+  <style>
+    .question { margin-bottom: 1.5em; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .variants li {
+      cursor: pointer;
+      list-style: none;
+      padding: 5px 10px;
+      margin: 4px 0;
+      background: #f0f0f0;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .variants li:hover { background: #e0e0e0; }
+    .variants li.correct { background-color: #c8f7c5 !important; }
+    .variants li.incorrect { background-color: #f7c5c5 !important; }
+    #score { font-size: 1.2em; font-weight: bold; margin-top: 20px; }
+    button { margin: 10px 0; padding: 6px 14px; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <button id="start">Начать тест</button>
+  <div id="quiz"></div>
+  <button id="finish" style="display:none;">Завершить тест</button>
+  <div id="score"></div>
+
+  <!-- UnicodeMathML -->
+  <script>
+    var unicodemathmlOptions = { resolveControlWords: true };
+  </script>
+  <script src="https://cdn.jsdelivr.net/gh/doersino/UnicodeMathML@master/dist/unicodemathml.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/doersino/UnicodeMathML@master/dist/unicodemathml-parser.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/doersino/UnicodeMathML@master/dist/unicodemathml-integration.js"></script>
+
+  <script>
+    let score = 0, total = 0, answered = 0, selectedQuestions = [];
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    // Генерирует DOM для массива parts: текстовые узлы + <span>⁅…⁆
+    function renderParts(parts) {
+      const frag = document.createDocumentFragment();
+      parts.forEach(p => {
+        if (p.type === 'text') {
+          frag.append(document.createTextNode(p.value));
+        } else if (p.type === 'math') {
+          const span = document.createElement('span');
+          // оборачиваем содержимое в делимитеры
+          span.textContent = `⁅${p.value}⁆`;
+          frag.append(span);
+        }
+      });
+      return frag;
+    }
+
+    document.getElementById('start').addEventListener('click', () => {
+      fetch('questions.json')
+        .then(res => res.json())
+        .then(all => {
+          const easy   = all.filter(q => q.difficulty==='easy');
+          const medium = all.filter(q => q.difficulty==='medium');
+          const hard   = all.filter(q => q.difficulty==='hard');
+
+          shuffle(easy); shuffle(medium); shuffle(hard);
+
+          selectedQuestions = [
+            ...easy.slice(0,100),
+            ...medium.slice(0,100),
+            ...hard.slice(0,100)
+          ];
+          shuffle(selectedQuestions);
+
+          score = answered = 0;
+          total = selectedQuestions.length;
+
+          renderQuiz(selectedQuestions);
+          document.getElementById('finish').style.display = 'inline-block';
+          document.getElementById('score').textContent = '';
+        });
+    });
+
+    function renderQuiz(questions) {
+      const container = document.getElementById('quiz');
+      container.innerHTML = '';
+
+      questions.forEach((q, idx) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.dataset.answered = 'false';
+
+        // Вопрос
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>Вопрос ${idx+1}:</strong> `;
+        p.append(renderParts(q.parts));
+        div.append(p);
+
+        // Варианты
+        const ul = document.createElement('ul');
+        ul.className = 'variants';
+
+        const variants = [...q.variants];
+        shuffle(variants);
+
+        variants.forEach(v => {
+          const li = document.createElement('li');
+          li.append(renderParts(v.parts));
+          li.dataset.correct = v.correct;
+          li.addEventListener('click', () => {
+            if (div.dataset.answered==='true') return;
+            const correct = li.dataset.correct==='true';
+            if (correct) { li.classList.add('correct'); score++; }
+            else {
+              li.classList.add('incorrect');
+              // подсветим правильный
+              ul.querySelectorAll('li').forEach(x => {
+                if (x.dataset.correct==='true') x.classList.add('correct');
+              });
+            }
+            div.dataset.answered = 'true';
+            answered++;
+          });
+          ul.append(li);
+        });
+
+        div.append(ul);
+        container.append(div);
+      });
+
+      // После динамического добавления всех <span>⁅…⁆ запускаем рендер
+      renderUnicodemath();
+    }
+
+    document.getElementById('finish').addEventListener('click', () => {
+      document.getElementById('score').textContent =
+        `Вы ответили правильно на ${score} из ${total} вопросов.`;
+    });
+  </script>
+  
+  <p>Вычислить производную функции ⁅ (x)=2^(x^2 )⁆</p>
+</body>
+</html>
